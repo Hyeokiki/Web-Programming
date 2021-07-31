@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+       body{
+          overflow:  hidden;
+       }
+        #myCanvas {
+           float: left;
+            border: 1px solid black;
+        }
+        #score1{
+            /*first canvas's css*/
+            float: left;
+            margin-left: 50px;
+            /*border: 1px solid black;*/
+        }
+        #score2{
+            /*second canvas's css*/
+            float: left;
+            margin-left: 50px;
+            /*border: 1px solid black;*/
+        }
+        #princess{
+            float: left;
+            margin-left: 50px;
+            margin-top: 10px;
+            border: 1px solid black;
+        }
+        #boss{
+             position: absolute;
+             left: 410px;
+             top:110px;
+        }       
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="960" height="640"></canvas>
+    <canvas id="score1" width="400" height="70"></canvas>
+    <canvas id="score2" width="400" height="100"></canvas>
+    <canvas id="princess" width="400" height="400"></canvas>
+    <canvas id="boss" width="250" height="250"></canvas>
+    <script>
+        var canvas = document.getElementById("myCanvas");
+        var canvas2 = document.getElementById("score1");//점수 캔버스1
+        var canvas3 = document.getElementById("score2");//점수 캔버스2
+        var canvas4 = document.getElementById("princess");//공주 캔버스
+        var canvas5 = document.getElementById("boss");
+        var ctx = canvas.getContext("2d");
+        var ctx2 = canvas2.getContext("2d");//점수 캔버스1
+        var ctx3 = canvas3.getContext("2d");//점수 캔버스2
+        var pr = canvas4.getContext("2d");//공주 캔버스
+        var bs = canvas5.getContext("2d");
+        var ballRadius = 20;
+        var x = canvas.width / 2;
+        var y = canvas.height - 60;
+        var dx = 4;
+        var dy = -4;
+        var paddleHeight = 20;
+        var paddleWidth = 150;
+        var paddleX = (canvas.width - paddleWidth) / 2;
+        var rightPressed = false;
+        var leftPressed = false;
+        var brickRowCount = 5;
+        var brickColumnCount = 3;
+        var brickWidth = 150;
+        var brickHeight = 40;
+        var brickPadding = 20;
+        var brickOffsetTop = 60;
+        var brickOffsetLeft = 60;
+        var score = 0;
+        var lives = 3;
+        var img = new Image;//공주 이미지
+        img.src = "mimg2.jpg";
+        var bricks = [];
+
+        var boss = {x: 400, y:100, status: 10 };//보스 객체
+        var bossW = 250;
+        var bossH = 250;
+        var vimg = new Image;//보스 이미지
+
+        var level = 3; //난이도 변수
+        var shieldNum = 0; //보호막 갯수
+        var fastNum = 0;   //신발 갯수
+        var webNum = 0;      //거미줄 갯수
+        var mode = 2; //모드 1: 1인모드 2: 협동 모드 3: vs모드
+     
+        if(level == 2){
+           shieldNum = makeRandomNum()%4; //보호막 개수 제한
+           fastNum = makeRandomNum()%4;   //신발 개수 제한
+           webNum = makeRandomNum()%2;      //거미줄 개수 제한
+        }
+        else if(level == 3){
+           shieldNum = makeRandomNum()%2; //보호막 개수 제한
+           fastNum = makeRandomNum()%6;   //신발 개수 제한
+           webNum = makeRandomNum()%4;      //거미줄 개수 제한
+        }
+        
+        //랜덤 숫자 만드는 함수
+        function makeRandomNum(){
+           var randomNum = 0;
+           var randomNum = Math.random();
+           randomNum = randomNum * 100;
+           return Math.floor(randomNum);
+        }
+
+        //벽돌 배열에 랜덤으로 아이템 배정하는 함수
+        function setItem(){
+           var shieldTemp= 0; 
+           var fastTemp = 0;
+           var webTemp = 0;
+           var colTemp = makeRandomNum()%(brickColumnCount);
+           var rowTemp = makeRandomNum()%(brickRowCount);
+           while(shieldTemp < shieldNum){
+              var colTemp = makeRandomNum()%(brickColumnCount);
+              var rowTemp = makeRandomNum()%(brickRowCount);
+              if(bricks[colTemp][rowTemp].status == 1){
+                 shieldTemp++;
+                 bricks[colTemp][rowTemp].status = 2;
+              }
+           }
+           while(fastTemp < fastNum){
+              var colTemp = makeRandomNum()%(brickColumnCount);
+              var rowTemp = makeRandomNum()%(brickRowCount);
+              if(bricks[colTemp][rowTemp].status == 1){
+                 fastTemp++;
+                 bricks[colTemp][rowTemp].status = 3;
+              }
+         }
+         while(webTemp < webNum){
+            var colTemp = makeRandomNum()%(brickColumnCount);
+              var rowTemp = makeRandomNum()%(brickRowCount);
+              if(bricks[colTemp][rowTemp].status == 1){
+                 webTemp++;
+                 bricks[colTemp][rowTemp].status = 4;
+              }
+         }
+        }
+
+        for (var c = 0; c < brickColumnCount; c++) {
+            bricks[c] = [];
+            for (var r = 0; r < brickRowCount; r++) {
+                bricks[c][r] = { x: 0, y: 0, status: 1, itemDropV: 4, direction: makeRandomNum()%2
+                // 아이템 값 (0,1,2,3) 0: 벽돌 없음 1: 기본 2: 보호막 3: 신발 4: 거미줄
+                // 5: 아이템 보호막 드랍 6. 아이템 신발 드랍 7. 아이템 거미줄 드랍
+                //itemDropV 각 벽돌의 아이템 떨어지는 속도
+                //direction 0: 아이템 아래로 떨어짐, direction 1:아이템 위로 올라감
+                };
+            }
+        }
+        setItem(); //아이템 status 랜덤으로 배정
+
+
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
+        // document.addEventListener("mousemove", mouseMoveHandler, false);
+
+        function keyDownHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = true;
+            }
+            else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = true;
+            }
+        }
+
+        function keyUpHandler(e) {
+            if (e.key == "Right" || e.key == "ArrowRight") {
+                rightPressed = false;
+            }
+            else if (e.key == "Left" || e.key == "ArrowLeft") {
+                leftPressed = false;
+            }
+        }
+
+        function mouseMoveHandler(e) {
+            var relativeX = e.clientX - canvas.offsetLeft;
+            if (relativeX > 0 && relativeX < canvas.width) {
+                paddleX = relativeX - paddleWidth / 2;
+            }
+        }
+        
+        /*function dropItem(c,r){
+            itemX = bricks[c][r].x;
+             itemY = bricks[c][r].y;
+             if(bricks[c][r].status == 2){
+                  
+                        ctx.beginPath();
+                        ctx.rect(itemX, itemY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#FF0000";
+                        ctx.fill();
+                        ctx.closePath();                       
+
+            }
+            else if(bricks[c][r].status == 3){
+                       
+                        ctx.beginPath();
+                        ctx.rect(itemX, itemY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#0100FF";
+                        ctx.fill();
+                        ctx.closePath();
+            }
+            else if(bricks[c][r].status == 4){
+                       
+                        ctx.beginPath();
+                        ctx.rect(itemX, itemY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#FFE400";
+                        ctx.fill();
+                        ctx.closePath();   
+            }
+            itemY += itemM;
+            itemM += 4;
+        }*/
+        function BossDetection(){               
+                /*if(x<boss.x+bossW&&x>boss.x&& y<boss.y+bossH&&y>boss.y){
+                    if(dx<0&&dy<0){
+                        dx = -dx;
+                    }else if(dx<0&&dy>0){
+                        dx = -dx;
+                    }else if(dx>0&&dy<0){
+
+                    }
+                }*/
+
+                if(x<boss.x+bossW&&x>boss.x&& y<boss.y+bossH&&y>boss.y){
+                    dx = -dx;
+                    dy = -dy;
+                    boss.status--;
+                }
+
+        }
+        function drawBoss(){
+                        //var brickX = ((bossW + bossPadding)) + bossOffsetLeft;
+                        //var brickY = ((bossH + bossPadding)) + bossOffsetTop;
+                        //boss.x = brickX;
+                        //boss.y = brickY;
+                        bs.drawImage(vimg, 0, 0,bossW,bossH );
+                        ctx.beginPath();
+                        /*ctx.rect(boss.x, boss.y, bossW, bossH);
+                        ctx.fillStyle = "#0095DD";
+                        ctx.fill();
+                        ctx.closePath();*/
+                        if(boss.status>5&&boss.status<=10){
+                            vimg.src = "23.png";
+                        }else if(boss.status >1&&boss.status<5){
+                            vimg.src = "펭귄보스3..jpg";
+                        }else if(boss.status == 0){
+                            vimg.src = "펭귄보스2.jpg";
+                        }
+        }  
+        function ItemDetection(){
+           for (var c = 0; c < brickColumnCount; c++) {
+                for (var r = 0; r < brickRowCount; r++) {
+                    var b = bricks[c][r]; 
+                    b.y += b.itemDropV;
+
+                  if (b.y<=canvas.height&&b.y >= canvas.height - paddleHeight && b.x +brickWidth/2 >= paddleX && b.x +brickWidth/2 <= paddleX + paddleWidth) {
+                          if(b.status == 5){
+                             b.status=-1;
+                         }
+                         else if(b.status == 6){
+                             b.status=-1;
+                         }
+                         else if(b.status == 7){
+                             b.status=-1;
+                         }
+                  }
+                  else {
+                          
+                  }
+                  
+                }
+            }
+
+        }
+        function collisionDetection() {
+            for (var c = 0; c < brickColumnCount; c++) {
+                for (var r = 0; r < brickRowCount; r++) {
+                    var b = bricks[c][r];
+                    if (b.status == 1 || b.status == 2 || b.status == 3 || b.status == 4) {
+                        if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
+                            dy = -dy;
+                            if(b.status == 2){
+                               b.status = 5;
+                            }
+                            else if(b.status == 3){
+                               b.status = 6;
+                            }
+                            else if(b.status == 4){
+                               b.status = 7;
+                            }
+                            else{
+                               b.status = 0;
+                            }
+                            score++;
+                            if (score == brickRowCount * brickColumnCount) {
+                                alert("YOU WIN, CONGRATS!");
+                                document.location.reload();
+                            }
+                        }
+                    }
+                    else if(b.status == 5 || b.status == 6 || b.status == 7){
+                          if(b.status == 5){
+                               b.itemDropV += 4;
+                            }
+                            else if(b.status == 6){
+                               b.itemDropV += 4;
+                            }
+                            else if(b.status == 7){
+                               b.itemDropV += 4;
+                            }
+                    }
+                    else if(b.status == -1){
+                       b.itemDropV +=4;
+                    }
+                }
+            }
+        } 
+                                 
+        function drawBall() {
+            ctx.beginPath();
+            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+        function drawPaddle() {
+            ctx.beginPath();
+            ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+            ctx.fillStyle = "#0095DD";
+            ctx.fill();
+            ctx.closePath();
+        }
+        function drawBricks() {
+            for (var c = 0; c < brickColumnCount; c++) {
+                for (var r = 0; r < brickRowCount; r++) {
+                    if (bricks[c][r].status == 1) {
+                          var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#0095DD";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                    else if(bricks[c][r].status == 2){
+                  var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#FF0000";
+                        ctx.fill();
+                        ctx.closePath();                       
+
+                    }
+                    else if(bricks[c][r].status == 3){
+                       var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#0100FF";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                    else if(bricks[c][r].status == 4){
+                       var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.beginPath();
+                        ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                        ctx.fillStyle = "#FFE400";
+                        ctx.fill();
+                        ctx.closePath();   
+                    }
+                    else if(bricks[c][r].status == 5){
+                       var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        if(bricks[c][r].direction == 0){
+                           brickY += bricks[c][r].itemDropV;
+                        }
+                        else if(bricks[c][r].direction ==1){
+                           if(mode==2){
+                              brickY -= bricks[c][r].itemDropV;
+                           }
+                           else{
+                              brickY += bricks[c][r].itemDropV;
+                           }
+                        }
+                        
+                        ctx.beginPath();
+                        ctx.rect(brickX+brickWidth/4, brickY, brickWidth/2, brickHeight);
+                        ctx.fillStyle = "#FF0000";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                    else if(bricks[c][r].status == 6){
+                       var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        if(bricks[c][r].direction == 0){
+                           brickY += bricks[c][r].itemDropV;
+                        }
+                        else if(bricks[c][r].direction ==1){
+                           if(mode==2){
+                              brickY -= bricks[c][r].itemDropV;
+                           }
+                           else{
+                              brickY += bricks[c][r].itemDropV;
+                           }                        }
+                        ctx.beginPath();
+                        ctx.rect(brickX+brickWidth/4, brickY, brickWidth/2, brickHeight);
+                        ctx.fillStyle = "#0100FF";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                    else if(bricks[c][r].status == 7){
+                       var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop;
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        if(bricks[c][r].direction == 0){
+                           brickY += bricks[c][r].itemDropV;
+                        }
+                        else if(bricks[c][r].direction ==1){
+                           if(mode==2){
+                              brickY -= bricks[c][r].itemDropV;
+                           }
+                           else{
+                              brickY += bricks[c][r].itemDropV;
+                           }
+                        }
+                        ctx.beginPath();
+                        ctx.rect(brickX+brickWidth/4, brickY, brickWidth/2, brickHeight);
+                        ctx.fillStyle = "#FFE400";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                    else if(bricks[c][r].status == -1){
+                       var brickX = (r * (brickWidth + brickPadding)) + brickOffsetLeft;
+                        var brickY = (c * (brickHeight + brickPadding)) + brickOffsetTop+bricks[c][r].itemDropV;
+                        if(bricks[c][r].direction == 0){
+                           brickY -= bricks[c][r].itemDropV;
+                        }
+                        else if(bricks[c][r].direction ==1){
+                           if(mode==2){
+                              brickY += bricks[c][r].itemDropV;
+                           }
+                           else{
+                              brickY -= bricks[c][r].itemDropV;
+                           }
+                        }
+                        ctx.beginPath();
+                        bricks[c][r].x = brickX;
+                        bricks[c][r].y = brickY;
+                        ctx.rect(brickX+brickWidth/4, brickY, brickWidth/2, brickHeight);
+                        ctx.fillStyle = "black";
+                        ctx.fill();
+                        ctx.closePath();
+                    }
+                }
+            }
+        }
+        function drawScore() {
+         ctx.font = "20px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("난이도: " + level + "단계", 8, 25);
+            
+            ctx2.font = "50px Arial";
+            ctx2.fillStyle = "#0095DD";
+            ctx2.textAlign = "center";
+            ctx2.fillText("SCORE" , 173, 45);
+           //첫번째 캔버스: "SCORE"만 표시함
+
+            ctx3.font = "80px Arial";
+            ctx3.fillStyle = "#0095DD";
+            ctx3.textAlign = "center";
+            ctx3.fillText(score , 173, 60);
+            //두번째 캔버스: 실제 점수를 표시함
+        }
+
+        function drawPrincess(){
+            pr.drawImage(img,0,0, 400, 400);
+        }
+
+        function drawLives() {
+            ctx.font = "16px Arial";
+            ctx.fillStyle = "#0095DD";
+            ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+        }
+        
+
+        function draw() {
+              ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx3.clearRect(0, 0, canvas3.width, canvas3.height);
+            pr.clearRect(0, 0, pr.width, pr.height);
+            bs.clearRect(0,0,canvas5.width,canvas5.height);
+            
+            drawBricks();
+            drawBall();
+            drawPaddle();
+            drawScore();
+            drawLives();
+            if(boss.status>0 && level==2){
+                drawBoss();
+                BossDetection();
+            }
+            collisionDetection();
+            drawPrincess();
+            ItemDetection();
+
+            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+                dx = -dx;
+            }
+            if (y + dy < ballRadius) {
+                // vs 모드에서는 위의 진영 아래 진영 구별 한 후에 이때에도 점수 감소 필요          
+                dy = -dy;
+            }
+            else if (y + dy > canvas.height - ballRadius) {
+                if (x > paddleX && x < paddleX + paddleWidth) {
+                    dy = -dy;
+                }
+                else {
+                    lives--;
+                    // 공주 이미지 변경
+                    /* 
+                    if(lives==1){
+                        
+                    }
+                     */
+                    if (!lives) {
+                        alert("GAME OVER");
+                        // 공주 이미지 변경 
+                        document.location.reload();
+                    }
+                    else {
+                        x = canvas.width / 2;
+                        y = canvas.height - 60;
+                        dx = 4;
+                        dy = -4;
+                        paddleX = (canvas.width - paddleWidth) / 2;
+                          
+                    }
+                }
+            }
+
+            if (rightPressed && paddleX < canvas.width - paddleWidth) {
+                paddleX += 7;
+            }
+            else if (leftPressed && paddleX > 0) {
+                paddleX -= 7;
+            }
+
+
+            x += dx;
+            y += dy;
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+
+</html>

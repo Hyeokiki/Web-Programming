@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="https://fonts.googleapis.com/css2?family=Gugi&display=swap" rel="stylesheet">
+	<style>
+		*{	margin: 0;
+			padding: 0;}
+		body{
+			width: 960px;
+			margin:0 auto;
+			font-family: 'Times New Roman', serif;
+		}
+		header{
+			width: 960px;
+			height: 160px;
+			margin: 0 auto;
+		}
+		nav>ul{
+			overflow: hidden;
+		}
+		nav>ul>li{
+			list-style: none;
+			float: left;
+		}
+		nav>ul>li>a{
+			display: block;
+			width: 100px;
+			height: 20px;
+			padding: 10px;
+			border: 1px solid blue;
+			text-align: center;
+			line-height: 20px;
+		}
+		nav>ul>li>a:hover{
+			background-color: black;
+			color: white;
+		}
+		nav>ul>li:first-child>a{
+			border-radius: 15px 0 0 15px;
+		}
+		nav>ul>li:last-child>a{
+			border-radius: 0 15px 15px 0;
+		}
+		a{
+			text-decoration: none;
+		}
+		img{
+			border: 0;
+		}
+		#main-header{
+			position:relative;
+		}
+		#main-header>nav{
+			position: absolute;
+			left: 0px;
+			bottom:0px;
+		}
+		#main-header>#title{
+			position: absolute;
+			top:30px;
+			right:20px;
+			font-family: 'Gugi', cursive;
+		}
+		#content{
+			overflow:hidden;
+			width: 960px;
+			margin:0 auto;
+		}
+		input:nth-of-type(1){ display: none;}
+		input:nth-of-type(1)~div:nth-of-type(1){display:none;}
+		input:nth-of-type(1):checked~div:nth-of-type(1){display:block;}
+		input:nth-of-type(2){ display: none;}
+		input:nth-of-type(2)~div:nth-of-type(2){display:none;}
+		input:nth-of-type(2):checked~div:nth-of-type(2){display:block;}
+		input:nth-of-type(1):checked~section.tab-title>label:nth-of-type(1){background:white; color:black;}
+		input:nth-of-type(2):checked~section.tab-title>label:nth-of-type(2){background:white; color:black;}
+		section{
+			float:left;
+			width: 720px;
+		}
+		aside{
+			float:right; 
+			width: 230px;
+		}
+		.tab-item{
+			display:none;
+		}
+		section.tab-title{
+			overflow: hidden;
+		}
+		section.tab-title>label{
+			display: block;
+			float: left;
+			width: 100px;
+			height: 30px;
+			line-height: 30px;
+			text-align: center;
+			border: 1px solid black;
+
+			background: black;
+			color: white;
+		}
+		.item{
+			overflow: hidden;
+			width:182px;
+			padding:10px;
+			border: 1px solid black;
+			border-top:none;
+		}
+		.thumbnail{
+			float:left;
+		}
+		.description{
+			float:left;
+			margin-left:10px;
+		}
+		.description>strong{
+			display: block;
+			width: 120px;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	</style>
+</head>
+<body>
+	<header id = "main-header">
+		<div id =title>
+			<h1>Weekly Hot Issues</h1>
+		</div>
+		<nav>
+			<ul>
+				<li><a href="#">영화</a></li>
+				<li><a href="#">드라마</a></li>
+				<li><a href="#">TV예능</a></li>
+				<li><a href="#">다큐멘터리</a></li>
+				<li><a href="#">뉴스</a></li>
+			</ul>
+		</nav>
+	</header>
+	<div id ="content">
+		<section>
+		</section>
+		<aside>
+			<input id="song" type="radio" name="tab" checked=checked>
+			<input id="movie" type="radio" name="tab">
+			<section class="tab-title">
+				<label for="song">Song Top 5</label>
+				<label for="movie">Movie Top 5</label>
+			</section>
+			<div class="tab-item">
+				<ul>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>어떻게 이별까지 사랑하겠어, 다만 널 사랑하는거지</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>Rollin</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>Oscar</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>Fedexx Girl</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>Flying High With You</strong>
+							</div>
+						</a>	
+				</ul>
+			</div>
+			<div class=tab-item>
+				<ul>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>소울</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>어벤져스:엔드게임</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>너의 모든 것</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>나는 네가 지난 여름에 한 일을 알고 있다</strong>
+							</div>
+						</a>
+					<li class="item">
+						<a href=#>
+							<div class = "thumbnail">
+								<img src="http://placehold.it/45X45">
+							</div>
+							<div class = "description">
+								<strong>승리호</strong>
+							</div>
+						</a>
+				</ul>
+			</div>
+		</aside>
+	</div>
+	<footer>
+	</footer>
+</body>
+</html>

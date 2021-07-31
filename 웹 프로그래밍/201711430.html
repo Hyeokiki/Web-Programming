@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		HTML5 Basic Page
+	</title>
+	<style>
+		*{	
+			font-family:"맑은 고딕", Gothic, sans-serif;
+		    margin : 0;
+		    padding : 0;
+		}
+		a{
+			text-decoration:none;
+		}
+		body{
+			width: 960px;
+			margin: 0 auto;
+			background-color: #E6E6E6;
+		}
+		li {
+			list-style: none;
+		}	
+		
+		input[type=text]:focus{
+			background-color: yellow;
+		}
+
+		article{
+			padding: 0 10px 20px 10px;
+			border-bottom: 1px solid #C9C9C9;
+		}
+		#page-wrapper{
+			margin-top: 40px;
+			padding:10px 20px;
+			background-color: white; 
+		}
+		#main-header{
+			padding:40px 50px;
+		}
+		#main-navigation{
+			margin-bottom: 20px;
+			border-top: 1px solid #C9C9C9;
+			border-bottom: 1px solid #C9C9C9;
+			height : 40px;
+			overflow: hidden;
+		}
+		#content{
+			overflow: hidden;
+		}
+		#main-section{
+			width:710px;
+			float:left;
+		}
+		#main-aside{
+			width:200px;
+			float:left;
+		}
+		.outer-menu{
+			overflow: hidden;
+		}
+		.outer-menu-item{
+			display: block; 
+			height:30px; 
+			width:80px; 
+			padding: 5px 20px;
+			text-align: center;
+			line-height: 30px;	
+			float : left;
+		}
+		.outer-menu-item:hover{ 
+			color : white;
+			background-color: black;
+		}
+		.master-title{
+			font-size: 30px;
+			color : #191919;
+		}
+		.master-description{
+			font-size: 15px;
+			color : #383838;
+		}
+		.pull-left{
+			height : 40px;
+			float: left;
+		}
+		.pull-right{
+			padding: 7px;
+			height: 26px;
+			float:right;
+		}
+		.input-search{
+			display: block;
+			height: 24px;
+			width: 120px;
+			text-indent: 10px;			
+			border: 1px solid #CCCCCC;
+			border-radius: 15px 0 0 15px;
+			outline : 0;
+			float :left;
+		}
+		.input-search-submit{
+			display: block;
+			height: 26px;
+			width: 50px;
+			border: 1px solid #CCCCCC;
+			border-radius: 0 15px 15px 0;
+			float:right;
+		}
+		.article-header{
+			padding:20px 0;
+		}
+		.article-title{
+			font-size: 25px;
+		}
+		.article-date{
+			font-size: 13px;
+		}
+		.article-body{
+			font-size: 14px;
+		}
+		.aside-list li a{
+			font-size: 13px;
+			color : orange;
+		}
+		.aside-list > h3{
+			font-size : 15px;
+			color : blue;
+		}
+	</style>
+</head>
+<body>
+<div id = "page-wrapper">
+	<header id = "main-header">
+		<h1 class="master-title">웹 프로그래밍 완전 정복</h1>
+		<h2 class="master-description">건국대학교 컴퓨터공학부</h2>
+	</header>
+	<nav id = "main-navigation">
+		<div class="pull-left">
+			<ul class ="outer-menu">
+				<li class="outer-menu-item">HTML5</li>
+				<li class="outer-menu-item">CSS3</li>
+				<li class="outer-menu-item">PHP</li>
+			</ul>
+		</div>
+		<div class="pull-right">
+			<form>
+				<input type="text" class="input-search">
+				<input type="submit" class="input-search-submit" value = "검색">
+			</form>	
+		</div>
+	</nav>
+	<div id = "content">
+		<section id = "main-section">
+			<article>
+				<div class="article-header">
+					<h1 class ="article-title">HTML5 개요와 활용</h1>
+					<p class ="article-date">2021년 03월 09일</p>	
+				</div>
+				<div class="article-body">
+					<img src="https://placehold.it/430X280"  alt="430X280">
+					<p>무야호~!</p>
+				</div>
+			</article>
+			<article>
+				<div class="article-header">
+					<h1 class ="article-title">HTML5 개요와 활용</h1>
+					<p class ="article-date">2021년 03월 11일</p>	
+				</div>
+				<div class="article-body">
+					<img src="https://placehold.it/430X280" alt="430X280">
+					<p>그만큼 유익한거지~</p>
+				</div>			
+			</article>
+		</section>
+		<aside id = "main-aside">
+			<div class="aside-list">
+				<h3>카테고리</h3>
+				<ul>
+					<li><a href = "#">데이터</a></li>
+					<li><a href = "#">데이터</a></li>
+					<li><a href = "#">데이터</a></li>
+					<li><a href = "#">데이터</a></li>
+					<li><a href = "#">데이터</a></li>
+				</ul>
+			</div>
+			<div class="aside-list">
+				<h3>최근 글</h3>
+				<ul>
+					<li><a href = "#">데이터</a></li>
+					<li><a href = "#">데이터</a></li>
+					<li><a href = "#">데이터</a></li>
+					<li><a href = "#">데이터</a></li>
+				</ul>
+			</div>
+		</aside>
+	</div>
+	<footer id ="main-footer">
+		<a href ="#">Created By Junehyeock Cha</a>
+	</footer>
+</div>
+</body>
+</html>
